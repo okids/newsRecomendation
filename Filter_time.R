@@ -1,6 +1,7 @@
 mydata <- read.csv("C:/Users/Oki.OKI-PC/Documents/newsRecomendation-master/reading_history.csv")
 lookup <- read.csv("C:/Users/Oki.OKI-PC/Documents/newsRecomendation-master/article_category.csv")
 base1 <- (merge(mydata, lookup, by = 'article_id'))
+listOfArticleId = as.matrix(unlist(sapply(base1, levels)))
 len = length(base1[,3])
 dataInInterval = base1[with(base1, order(timestamp)), ]
 timeInterval = 13*24*60*60
@@ -25,7 +26,7 @@ clickCounter = matrix(nrow = len, ncol = 12)
 articleCounter = matrix (nrow = len, ncol =12)
 userLike = matrix(nrow = len, ncol = 13)
 userLike  = as.data.frame(userLike)
-colnames(userLike) <- c("User","PC1","PC2","PC3","PC4","PC5","PC6","PC7","PC8","PC9","PC10","PC11","PC12")
+colnames(userLike) <- c("User",listOfArticleId[1],listOfArticleId[2],listOfArticleId[3],listOfArticleId[4],listOfArticleId[5],listOfArticleId[6],listOfArticleId[7],listOfArticleId[8],listOfArticleId[9],listOfArticleId[10],listOfArticleId[11],listOfArticleId[12])
 uniqueArticle = 0
 uniqueId = 0
 for (i in 1:4){
@@ -53,7 +54,7 @@ for (i in 1:4){
 			uniqueId [k] = length(unique(userDataInInterval[startIndex:end,3]))
 			userLike[k,1] = userDataInInterval[startIndex,3]
 			for (m in 2:13){
-				userLike[k,m] = (clickCounter[m-1]/sum(clickCounter))*(sum(articleCounter)/articleCounter[m-1])*0.1		
+				userLike[k,m] = (clickCounter[m-1]/sum(clickCounter))*(sum(articleCounter)/articleCounter[m-1])*0.5		
 			}
 			k=k+1
 			startIndex = end+1
@@ -64,4 +65,9 @@ for (i in 1:4){
 }
 
 output = na.omit(userLike)
-output= output[with(test , order(User)), ]
+output= output[with(output , order(User)), ]
+library(xlsx)
+dirExcel = "C:/Users/Oki.OKI-PC/Documents/newsRecomendation-master/output.xlsx"
+dirCsv ="C:/Users/Oki.OKI-PC/Documents/newsRecomendation-master/output.csv"
+write.xlsx(output,dirExcel)
+write.csv(output,dirCsv)
